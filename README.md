@@ -39,6 +39,7 @@ As in any other Proxmox installation, or server for that matter, the hardware ne
 
 
 ## OPNsense Router ##
+![OPNsense dashboard](images/OPNsense.png)  
 Router + 2.5G switch
 
 ## Portable workstation/gaming desktop (Windows VM) ##
