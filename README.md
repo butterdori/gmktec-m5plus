@@ -151,4 +151,5 @@ iface vmbr1 inet static
     bridge_fd 0
 ```
 
-If you also find `iface wlp3s0 inet manual` within `/etc/network/interfaces`, **delete it.**
+If you also find `iface wlp3s0 inet manual` within `/etc/network/interfaces`, **delete it.**  
+Now, `ifreload -a` to reload this configuration within Proxmox. You should also be able to find this configuration within the Proxmox maintenance page at Datacenter -> proxmox -> System -> Network. This will now channel any connections to the wireless to the vmbr1 lan bridge. Since DHCP is handled by OPNsense, you don't need to do anything further.
