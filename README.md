@@ -46,4 +46,89 @@ Router + 2.5G switch
 PCI passthrough
 
 ## Portable NAS ##
-Mobile hotspot https://stackoverflow.com/questions/45833873/enable-windows-10-built-in-hotspot-by-cmd-batch-powershell
+
+## Portable AP/Wireless Router ##
+If using Windows VM: Mobile hotspot https://stackoverflow.com/questions/45833873/enable-windows-10-built-in-hotspot-by-cmd-batch-powershell  
+  
+After setting up OPNsense, we can now try to use the onboard MediaTek WiFi card to function as an AP. First, check if the card is recognized.
+```
+lspci -k | grep -A 3 -i mediatek
+```
+
+Then check if it has AP functionality. Proxmox doesn' have iw installed by default so install it first, as well as hostapd to run the AP. But stop hostapd running for now
+```
+apt install iw hostapd
+systemctl stop hostapd
+iw list | grep -A 10 "Supported interface modes"
+```
+
+Identify the name of the wireless interface. It was wlp3s0 for me.
+```
+iw dev
+```
+
+Bring up the interface
+```
+ip link set wlp3s0 up
+```
+
+Create directory and the config file
+```
+mkdir /etc/hostapd
+vim /etc/hostapd/hostapd.conf
+```
+
+The config file should look like this
+```
+interface=wlp3s0
+driver=nl80211
+ssid=YourSSID
+hw_mode=a
+channel=36
+ieee80211n=1
+ieee80211ac=1
+wmm_enabled=1
+auth_algs=1
+wpa=2
+wpa_passphrase=YourStrongPassphrase
+wpa_key_mgmt=WPA-PSK
+rsn_pairwise=CCMP
+```
+
+If you try to start the hostapd service now, it may fail to run giving this error
+```
+wlp3s0: IEEE 802.11 Hardware does not support configured channel
+```
+
+This is likely due to regulatory restrictions on which frequencies or channels are allowed to be run depending on the country. When I received it first, it was set as Global, and some frequencies were disabled. You can check by
+```
+iw list | grep -A 20 "Frequencies:"
+```
+
+If the above command includes results such as below (No IR), it means they are disabled.
+```
+   Frequencies:
+                        * 5180 MHz [36] (20.0 dBm) (no IR)
+                        * 5200 MHz [40] (20.0 dBm) (no IR)
+                        * 5220 MHz [44] (20.0 dBm) (no IR)
+                        * 5240 MHz [48] (20.0 dBm) (no IR)
+                        * 5260 MHz [52] (20.0 dBm) (no IR, radar detection)
+                        * 5280 MHz [56] (20.0 dBm) (no IR, radar detection)
+                        * 5300 MHz [60] (20.0 dBm) (no IR, radar detection)
+                        * 5320 MHz [64] (20.0 dBm) (no IR, radar detection)
+                        * 5500 MHz [100] (20.0 dBm) (no IR, radar detection)
+                        * 5520 MHz [104] (20.0 dBm) (no IR, radar detection)
+                        * 5540 MHz [108] (20.0 dBm) (no IR, radar detection)
+                        * 5560 MHz [112] (20.0 dBm) (no IR, radar detection)
+                        * 5580 MHz [116] (20.0 dBm) (no IR, radar detection)
+                        * 5600 MHz [120] (20.0 dBm) (no IR, radar detection)
+```
+
+You can use ``iw reg get`` to check current regulatory status. You can then
+```
+iw reg set US
+```
+to set it to whichever jurisdiction you are in (US for United States). To persist this across reboots, at ``/etc/default/crda`` add
+```
+REGDOMAIN=US
+```
