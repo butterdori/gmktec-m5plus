@@ -128,7 +128,27 @@ You can use ``iw reg get`` to check current regulatory status. You can then
 ```
 iw reg set US
 ```
+
 to set it to whichever jurisdiction you are in (US for United States). To persist this across reboots, at ``/etc/default/crda`` add
 ```
 REGDOMAIN=US
 ```
+
+You can now start the hostapd service
+```
+systemctl start hostapd
+systemctl enable hostapd
+```
+
+Now, you should connect this to our existing lan bridge, which was `vmbr1`. Add wlp3s0 to bridge_ports at `/etc/network/interfaces`
+```
+auto vmbr1
+iface vmbr1 inet static
+    address 192.168.1.1
+    netmask 255.255.255.0
+    bridge_ports enp1s0 wlp3s0
+    bridge_stp off
+    bridge_fd 0
+```
+
+If you also find `iface wlp3s0 inet manual` within `/etc/network/interfaces`, **delete it.**
