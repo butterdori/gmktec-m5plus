@@ -1,7 +1,7 @@
 # GMKtec NucBox M5 Plus #
 This is a record of setting up a Proxmox server with the M5 Plus for OPNsense router with mobile hotspot, portable NAS, and a portable workstation/gaming desktop.  
   
-Currently running on Proxmox host:  
+Currently running on Proxmox host (1x 512GB NVMe and 1x 1TB NVMe):  
 * OPNsense router with Wifi AP using onboard MediaTek RZ616 Wifi and hostapd service
 * OMV NAS
 * Windows 10 with AMD Radeon Vega 8 PCI passthrough (Steam, Sunshine/Moonlight)  
