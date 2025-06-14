@@ -23,7 +23,7 @@ We will start with Proxmox, a free virtualization host that I am most familiar, 
 ## Specs ##
 CPU: Ryzen 7 5825U (Zen 3 8-core 2.0 GHz/4.5 GHz)  
 GPU: Radeon RX Vega 8 iGPU (8 CU)  
-RAM: DDR4 SO-DIMM  
+RAM: DDR4 SO-DIMM 2x16GB  
 Storage: 2x PCIE M.2  
 TDP: 15W (45W Performance Mode BIOS option)  
 LAN: 2x 2.5G (Realtek RTL8125)  
