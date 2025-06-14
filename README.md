@@ -1,6 +1,11 @@
 # GMKtec NucBox M5 Plus #
-This is a record of setting up a Proxmox server with the M5 Plus for OPNsense router with mobile hotspot, portable NAS, and a portable workstation/gaming desktop.
-
+This is a record of setting up a Proxmox server with the M5 Plus for OPNsense router with mobile hotspot, portable NAS, and a portable workstation/gaming desktop.  
+  
+Currently running on Proxmox host:  
+* OPNsense router with Wifi AP using onboard MediaTek RZ616 Wifi and hostapd service
+* OMV NAS
+* Windows 10 with AMD Radeon Vega 8 PCI passthrough (Steam, Sunshine/Moonlight)  
+  
 ## Motivation ##
 I have a home server based on a used workstation hardware to serve as a central storage for all of my needs, including photos, films, data, documents and other digital backups. While this always-on, always online server is useful and allows me to access my entire storage online, sometimes portable storage can also be useful. There may be limited internet connection, or none at all when travelling. At the same time, a physical external storage relies on a physical connection which can become easily damaged especially when travelling while connected. I was therefore looking for a portable NAS, if you will, that is 1) portable, and 2) accessible wirelessly. Being accessible wirelessly also meant that multiple devices can access the storage at the same time.  
 
@@ -93,9 +98,10 @@ wpa=2
 wpa_passphrase=YourStrongPassphrase
 wpa_key_mgmt=WPA-PSK
 rsn_pairwise=CCMP
+bridge=vmbr1
 ```
 
-If you try to start the hostapd service now, it may fail to run giving this error
+This sets the SSID, channel, authentication method, and the bridge you connect the AP to (vmbr1). If you try to start the hostapd service now, it may fail to run giving this error:
 ```
 wlp3s0: IEEE 802.11 Hardware does not support configured channel
 ```
@@ -140,13 +146,13 @@ systemctl start hostapd
 systemctl enable hostapd
 ```
 
-Now, you should connect this to our existing lan bridge, which was `vmbr1`. Add wlp3s0 to bridge_ports at `/etc/network/interfaces`
+Check `/etc/network/interfaces`
 ```
 auto vmbr1
 iface vmbr1 inet static
     address 192.168.1.1
     netmask 255.255.255.0
-    bridge_ports enp1s0 wlp3s0
+    bridge_ports enp1s0
     bridge_stp off
     bridge_fd 0
 ```
